@@ -1,4 +1,5 @@
 #pragma once
+#include "Mapa.h"
 
 namespace Strategy {
 
@@ -21,6 +22,8 @@ namespace Strategy {
 			//
 			//TODO: agregar código de constructor aquí
 			//
+
+			mapa = gcnew Mapa();
 		}
 
 	protected:
@@ -35,6 +38,7 @@ namespace Strategy {
 			}
 		}
 	private: System::Windows::Forms::Timer^ timer1;
+		   Mapa^ mapa;
 	protected:
 	private: System::ComponentModel::IContainer^ components;
 
@@ -63,8 +67,8 @@ namespace Strategy {
 			// Form_Game
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(8, 16);
-			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(1006, 593);
+			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::None;
+			this->ClientSize = System::Drawing::Size(1024, 640);
 			this->DoubleBuffered = true;
 			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedSingle;
 			this->KeyPreview = true;
@@ -73,9 +77,14 @@ namespace Strategy {
 			this->RightToLeftLayout = true;
 			this->StartPosition = System::Windows::Forms::FormStartPosition::CenterScreen;
 			this->Text = L"Eagle\'s Twilight";
+			this->Paint += gcnew System::Windows::Forms::PaintEventHandler(this, &Form_Game::Form_Game_Paint);
 			this->ResumeLayout(false);
 
 		}
 #pragma endregion
+	private: System::Void Form_Game_Paint(System::Object^ sender, System::Windows::Forms::PaintEventArgs^ e) 
+	{
+		mapa->dibujar(e->Graphics);
+	}
 	};
 }
