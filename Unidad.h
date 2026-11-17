@@ -16,11 +16,17 @@ private:
 	int direccion;
 	int cuadro;
 	int escala;
+	int movimiento;
+	int desplazamiento_y;
 public:
 	Unidad(int fila, int columa, Bando bando, int tamano, Bitmap^ sprite);
 	~Unidad();
 
 	void dibujar(Graphics^ graphics);
+	int obtener_fila();
+	int obtener_columna();
+	Bando obtener_bando();
+	int obtener_movimiento();
 };
 
 Unidad::Unidad(int fila, int columna, Bando bando, int tamano, Bitmap^ sprite)
@@ -36,6 +42,8 @@ Unidad::Unidad(int fila, int columna, Bando bando, int tamano, Bitmap^ sprite)
 	direccion = 0;
 	cuadro = 1;
 	escala = 2;
+	movimiento = 3;
+	desplazamiento_y = -12;
 }
 
 Unidad::~Unidad()
@@ -58,16 +66,36 @@ void Unidad::dibujar(Graphics^ graphics)
 	}
 
 	SolidBrush^ aro = gcnew SolidBrush(color_bando);
-	graphics->FillEllipse(aro, x + 3, y + tamano - 12, tamano - 6, 10);
+	graphics->FillEllipse(aro, x + 3, y + tamano - 12 + desplazamiento_y, tamano - 6, 10);
 	delete aro;
 
 	int ancho = sprite->Width / 3;
 	int alto = sprite->Height / 4;
 
 	Rectangle origen = Rectangle(cuadro * ancho, direccion * alto, ancho, alto);
-	Rectangle destino = Rectangle(x, y + tamano - alto * escala, ancho * escala, alto * escala);
+	Rectangle destino = Rectangle(x, y + tamano - alto * escala + desplazamiento_y, ancho * escala, alto * escala);
 
 	graphics->InterpolationMode = System::Drawing::Drawing2D::InterpolationMode::NearestNeighbor;
 	graphics->PixelOffsetMode = System::Drawing::Drawing2D::PixelOffsetMode::Half;
 	graphics->DrawImage(sprite, destino, origen, GraphicsUnit::Pixel);
+}
+
+int Unidad::obtener_fila()
+{
+	return fila;
+}
+
+int Unidad::obtener_columna()
+{
+	return columna;
+}
+
+Bando Unidad::obtener_bando()
+{
+	return bando;
+}
+
+int Unidad::obtener_movimiento()
+{
+	return movimiento;
 }

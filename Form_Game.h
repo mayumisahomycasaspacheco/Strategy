@@ -1,5 +1,5 @@
 #pragma once
-#include "Mapa.h"
+#include "Controladora.h"
 
 namespace Strategy {
 
@@ -23,7 +23,7 @@ namespace Strategy {
 			//TODO: agregar código de constructor aquí
 			//
 
-			mapa = gcnew Mapa();
+			juego = gcnew Controladora();
 		}
 
 	protected:
@@ -38,7 +38,7 @@ namespace Strategy {
 			}
 		}
 	private: System::Windows::Forms::Timer^ timer1;
-		   Mapa^ mapa;
+		   Controladora^ juego;
 	protected:
 	private: System::ComponentModel::IContainer^ components;
 
@@ -84,11 +84,11 @@ namespace Strategy {
 #pragma endregion
 	private: System::Void Form_Game_Paint(System::Object^ sender, System::Windows::Forms::PaintEventArgs^ e) 
 	{
-		mapa->dibujar(e->Graphics);
+		juego->dibujar(e->Graphics);
 	}
 	private: System::Void Form_Game_MouseClick(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e) 
 	{
-		mapa->clic(e->X, e->Y);
+		juego->clic(e->X, e->Y);
 		this->Invalidate();
 	}
 	};

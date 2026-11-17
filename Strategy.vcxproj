@@ -141,10 +141,12 @@
     <ClCompile Include="Form_Game.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Controladora.h" />
     <ClInclude Include="Form_Game.h">
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="Mapa.h" />
+    <ClInclude Include="Unidad.h" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Form_Game.resx">

@@ -18,6 +18,7 @@ public:
 	void dibujar(Graphics^ graphics);
 	bool es_transitable(int fila, int columna);
 	void clic(int x, int y);
+	int obtener_tamano();
 };
 
 Mapa::Mapa()
@@ -112,4 +113,9 @@ void Mapa::clic(int x, int y)
 		fila_clic = -1;
 		columna_clic = -1;
 	}
+}
+
+int Mapa::obtener_tamano()
+{
+	return tamano;
 }
