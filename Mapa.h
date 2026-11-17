@@ -16,6 +16,7 @@ public:
 
 	void dibujar(Graphics^ graphics);
 	bool es_transitable(int fila, int columna);
+	void clic(int x, int y);
 };
 
 Mapa::Mapa()
@@ -23,6 +24,9 @@ Mapa::Mapa()
 	filas = 16;
 	columnas = 32;
 	tamano = 32;
+	fila_clic = -1;
+	columna_clic = -1;
+	
 	casillas = gcnew array<int, 2>(filas, columnas);
 
 	for (int f = 6; f <= 8; f++)
@@ -81,4 +85,16 @@ bool Mapa::es_transitable(int fila, int columna)
 		return false;
 	}
 	return casillas[fila, columna] == 0;
+}
+
+void Mapa::clic(int x, int y)
+{
+	columna_clic = x / tamano;
+	fila_clic = y / tamano;
+
+	if (fila_clic >= filas)
+	{
+		fila_clic = -1;
+		columna_clic = -1;
+	}
 }
