@@ -10,6 +10,7 @@ private:
 	int tamano;
 
 	int fila_clic, columna_clic;
+	Bitmap^ imagen;
 public:
 	Mapa();
 	~Mapa();
@@ -21,6 +22,8 @@ public:
 
 Mapa::Mapa()
 {
+	imagen = gcnew Bitmap("sprites/Sprite-0001.png");
+
 	filas = 16;
 	columnas = 32;
 	tamano = 32;
@@ -40,42 +43,54 @@ Mapa::Mapa()
 	for (int f = 6; f <= 8; f++)
 	{
 		casillas[f, 7] = 0;
-		casillas[f, 8] = 0;
 		casillas[f, 23] = 0;
-		casillas[f, 24] = 0;
 	}
 }
 
 Mapa::~Mapa()
 {
-	//Destructor vacio
+	delete imagen;
 }
 
 void Mapa::dibujar(Graphics^ graphics)
 {
-	SolidBrush^ pasto = gcnew SolidBrush(Color::DarkOliveGreen);
-	SolidBrush^ rio = gcnew SolidBrush(Color::SteelBlue);
-	Pen^ lapiz = gcnew Pen(Color::FromArgb(60, 0, 0, 0));
+	graphics->InterpolationMode = System::Drawing::Drawing2D::InterpolationMode::NearestNeighbor;
+	graphics->PixelOffsetMode = System::Drawing::Drawing2D::PixelOffsetMode::Half;
+	graphics->DrawImage(imagen, 0, 0, columnas * tamano, filas * tamano);
 
+	SolidBrush^ rojo = gcnew SolidBrush(Color::FromArgb(90, 255, 0, 0));
+	
 	for (int f = 0; f < filas; f++)
 	{
 		for (int c = 0; c < columnas; c++)
 		{
 			if (casillas[f, c] == 1)
 			{
-				graphics->FillRectangle(rio, c * tamano, f * tamano, tamano, tamano);
+				graphics->FillRectangle(rojo, c * tamano, f * tamano, tamano, tamano);
 			}
-			else
-			{
-				graphics->FillRectangle(pasto, c * tamano, f * tamano, tamano, tamano);
-			}
-			graphics->DrawRectangle(lapiz, c * tamano, f * tamano, tamano, tamano);
 		}
 	}
 
-	delete pasto;
-	delete rio;
-	delete lapiz;
+	delete rojo;
+
+	if (fila_clic != -1)
+	{
+		Color color_luz;
+
+		if (es_transitable(fila_clic, columna_clic))
+		{
+			color_luz = Color::FromArgb(120, 0, 120, 255);
+		}
+
+		else
+		{
+			color_luz = Color::FromArgb(120, 255, 0, 0);
+		}
+
+		SolidBrush^ luz = gcnew SolidBrush(color_luz);
+		graphics->FillRectangle(luz, columna_clic * tamano, fila_clic * tamano, tamano, tamano);
+		delete luz;
+	}
 }
 
 bool Mapa::es_transitable(int fila, int columna)

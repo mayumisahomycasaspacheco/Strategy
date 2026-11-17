@@ -66,7 +66,6 @@ namespace Strategy {
 			// 
 			// Form_Game
 			// 
-			this->AutoScaleDimensions = System::Drawing::SizeF(8, 16);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::None;
 			this->ClientSize = System::Drawing::Size(1024, 640);
 			this->DoubleBuffered = true;
@@ -78,6 +77,7 @@ namespace Strategy {
 			this->StartPosition = System::Windows::Forms::FormStartPosition::CenterScreen;
 			this->Text = L"Eagle\'s Twilight";
 			this->Paint += gcnew System::Windows::Forms::PaintEventHandler(this, &Form_Game::Form_Game_Paint);
+			this->MouseClick += gcnew System::Windows::Forms::MouseEventHandler(this, &Form_Game::Form_Game_MouseClick);
 			this->ResumeLayout(false);
 
 		}
@@ -85,6 +85,11 @@ namespace Strategy {
 	private: System::Void Form_Game_Paint(System::Object^ sender, System::Windows::Forms::PaintEventArgs^ e) 
 	{
 		mapa->dibujar(e->Graphics);
+	}
+	private: System::Void Form_Game_MouseClick(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e) 
+	{
+		mapa->clic(e->X, e->Y);
+		this->Invalidate();
 	}
 	};
 }
