@@ -57,9 +57,64 @@ Unidad^ Controladora::buscar_unidad(int fila, int columna)
 	return nullptr;
 }
 
+bool Controladora::puede_ir_a(Unidad^ unidad, int fila, int columna)
+{
+	int distancia = Math::Abs(unidad->obtener_fila() - fila) + Math::Abs(unidad->obtener_columna() - columna);
+
+	if (distancia > unidad->obtener_movimiento())
+	{
+		return false;
+	}
+
+	if (!mapa->es_transitable(fila, columna))
+	{
+		return false;
+	}
+
+	if (buscar_unidad(fila, columna) != nullptr)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+void Controladora::dibujar_alcance(Graphics^ graphics)
+{
+	if (seleccionada == nullptr)
+	{
+		return;
+	}
+
+	int tamano = mapa->obtener_tamano();
+	int movimiento = seleccionada->obtener_movimiento();
+	int fila = seleccionada->obtener_fila();
+	int columna = seleccionada->obtener_columna();
+
+	SolidBrush^ azul = gcnew SolidBrush(Color::FromArgb(120, 0, 120, 255));
+	SolidBrush^ amarillo = gcnew SolidBrush(Color::FromArgb(120, 255, 220, 0));
+
+	graphics->FillRectangle(amarillo, columna * tamano, fila * tamano, tamano, tamano);
+
+	for (int f = fila - movimiento; f <= fila + movimiento; f++)
+	{
+		for (int c = columna - movimiento; c <= columna + movimiento; c++)
+		{
+			if (puede_ir_a(seleccionada, f, c))
+			{
+				graphics->FillRectangle(azul, c * tamano, f * tamano, tamano, tamano);
+			}
+		}
+	}
+
+	delete azul;
+	delete amarillo;
+}
+
 void Controladora::dibujar(Graphics^ graphics)
 {
 	mapa->dibujar(graphics);
+	dibujar_alcance(graphics);
 
 	for (int i = 0; i < unidades->Count; i++)
 	{
@@ -69,5 +124,19 @@ void Controladora::dibujar(Graphics^ graphics)
 
 void Controladora::clic(int x, int y)
 {
-	mapa->clic(x, y);
+	int tamano = mapa->obtener_tamano();
+	int columna = x / tamano;
+	int fila = y / tamano;
+
+	Unidad^ unidad = buscar_unidad(fila, columna);
+
+	if (unidad != nullptr && unidad->obtener_bando() == Bando::Aleman)
+	{
+		seleccionada = unidad;
+	}
+
+	else
+	{
+		seleccionada = nullptr;
+	}
 }

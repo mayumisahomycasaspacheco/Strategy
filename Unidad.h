@@ -2,7 +2,7 @@
 using namespace System;
 using namespace System::Drawing;
 
-enum class Bando { Aleman };
+enum class Bando { Aleman, Sovietico};
 
 ref class Unidad
 {
