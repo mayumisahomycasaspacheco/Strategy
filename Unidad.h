@@ -16,6 +16,8 @@ private:
 	int direccion;
 	int cuadro;
 	int escala;
+	int velocidad;
+	int contador;
 	int movimiento;
 	int desplazamiento_y;
 public:
@@ -27,6 +29,9 @@ public:
 	int obtener_columna();
 	Bando obtener_bando();
 	int obtener_movimiento();
+	void mover_a(int nueva_fila, int nueva_columna);
+	void animar();
+	bool en_movimiento();
 };
 
 Unidad::Unidad(int fila, int columna, Bando bando, int tamano, Bitmap^ sprite)
@@ -42,6 +47,8 @@ Unidad::Unidad(int fila, int columna, Bando bando, int tamano, Bitmap^ sprite)
 	direccion = 0;
 	cuadro = 1;
 	escala = 2;
+	velocidad = 4;
+	contador = 0;
 	movimiento = 3;
 	desplazamiento_y = -12;
 }
@@ -98,4 +105,107 @@ Bando Unidad::obtener_bando()
 int Unidad::obtener_movimiento()
 {
 	return movimiento;
+}
+
+void Unidad::mover_a(int nueva_fila, int nueva_columna)
+{
+	int dif_fila = nueva_fila - fila;
+	int dif_columna = nueva_columna - columna;
+
+	if (Math::Abs(dif_columna) >= Math::Abs(dif_fila))
+	{
+		if (dif_columna > 0)
+		{
+			direccion = 3;
+		}
+
+		else
+		{
+			direccion = 2;
+		}
+	}
+
+	else
+	{
+		if (dif_fila > 0)
+		{
+			direccion = 0;
+		}
+	}
+
+	fila = nueva_fila;
+	columna = nueva_columna;
+}
+
+bool Unidad::en_movimiento()
+{
+	return x != columna * tamano || y != fila * tamano;
+}
+
+void Unidad::animar()
+{
+	int destino_x = columna * tamano;
+	int destino_y = fila * tamano;
+
+	if (x < destino_x)
+	{
+		x = x + velocidad;
+		
+		if (x > destino_x)
+		{
+			x = destino_x;
+		}
+	}
+
+	else if (x > destino_x)
+	{
+		x = x - velocidad;
+		
+		if (x < destino_x)
+		{
+			x = destino_x;
+		}
+	}
+
+	if (y < destino_y)
+	{
+		y = y + velocidad;
+
+		if (y > destino_y)
+		{
+			y = destino_y;
+		}
+	}
+
+	else if (y > destino_y)
+	{
+		y = y - velocidad;
+
+		if (y < destino_y)
+		{
+			y = destino_y;
+		}
+	}
+
+	if (en_movimiento())
+	{
+		contador = contador + 1;
+		int fase = (contador / 5) % 4;
+
+		if (fase == 3)
+		{
+			cuadro = 1;
+		}
+
+		else
+		{
+			cuadro = fase;
+		}
+	}
+
+	else
+	{
+		contador = 0;
+		cuadro = 1;
+	}
 }

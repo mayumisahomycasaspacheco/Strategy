@@ -36,6 +36,7 @@ Controladora::Controladora()
 
 	int tamano = mapa->obtener_tamano();
 	unidades->Add(gcnew Unidad(12, 5, Bando::Aleman, tamano, sprite_soldado));
+	unidades->Add(gcnew Unidad(12, 7, Bando::Aleman, tamano, sprite_soldado));
 	unidades->Add(gcnew Unidad(2, 20, Bando::Sovietico, tamano, sprite_soldado1));
 }
 
