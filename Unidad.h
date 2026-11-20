@@ -10,6 +10,7 @@ private:
 	int fila, columna;
 	int x, y;
 	int vida;
+	int vida_maxima;
 	Bando bando;
 	int tamano;
 	Bitmap^ sprite;
@@ -32,6 +33,8 @@ public:
 	void mover_a(int nueva_fila, int nueva_columna);
 	void animar();
 	bool en_movimiento();
+	void recibir_danio(int danio);
+	bool esta_viva();
 };
 
 Unidad::Unidad(int fila, int columna, Bando bando, int tamano, Bitmap^ sprite)
@@ -44,6 +47,7 @@ Unidad::Unidad(int fila, int columna, Bando bando, int tamano, Bitmap^ sprite)
 	x = columna * tamano;
 	y = fila * tamano;
 	vida = 10;
+	vida_maxima = 10;
 	direccion = 0;
 	cuadro = 1;
 	escala = 2;
@@ -208,4 +212,19 @@ void Unidad::animar()
 		contador = 0;
 		cuadro = 1;
 	}
+}
+
+void Unidad::recibir_danio(int danio)
+{
+	vida = vida - danio;
+
+	if (vida < 0)
+	{
+		vida = 0;
+	}
+}
+
+bool Unidad::esta_viva()
+{
+	return vida > 0;
 }

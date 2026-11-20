@@ -18,12 +18,14 @@ private:
 	Unidad^ buscar_unidad(int fila, int columna);
 	bool puede_ir_a(Unidad^ unidad, int fila, int columna);
 	void dibujar_alcance(Graphics^ graphics);
+	bool hay_alguien_moviendose();
 public:
 	Controladora();
 	~Controladora();
 
 	void dibujar(Graphics^ graphics);
 	void clic(int x, int y);
+	void mover();
 };
 
 Controladora::Controladora()
@@ -125,6 +127,11 @@ void Controladora::dibujar(Graphics^ graphics)
 
 void Controladora::clic(int x, int y)
 {
+	if (hay_alguien_moviendose())
+	{
+		return;
+	}
+
 	int tamano = mapa->obtener_tamano();
 	int columna = x / tamano;
 	int fila = y / tamano;
@@ -136,8 +143,35 @@ void Controladora::clic(int x, int y)
 		seleccionada = unidad;
 	}
 
+	else if (seleccionada != nullptr && puede_ir_a(seleccionada, fila, columna))
+	{
+		seleccionada->mover_a(fila, columna);
+		seleccionada = nullptr;
+	}
+
 	else
 	{
 		seleccionada = nullptr;
+	}
+}
+
+bool Controladora::hay_alguien_moviendose()
+{
+	for (int i = 0; i < unidades->Count; i++)
+	{
+		if (unidades[i]->en_movimiento())
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void Controladora::mover()
+{
+	for (int i = 0; i < unidades->Count; i++)
+	{
+		unidades[i]->animar();
 	}
 }

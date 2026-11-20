@@ -63,6 +63,7 @@ namespace Strategy {
 			// 
 			this->timer1->Enabled = true;
 			this->timer1->Interval = 30;
+			this->timer1->Tick += gcnew System::EventHandler(this, &Form_Game::timer1_Tick);
 			// 
 			// Form_Game
 			// 
@@ -89,6 +90,11 @@ namespace Strategy {
 	private: System::Void Form_Game_MouseClick(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e) 
 	{
 		juego->clic(e->X, e->Y);
+		this->Invalidate();
+	}
+	private: System::Void timer1_Tick(System::Object^ sender, System::EventArgs^ e) 
+	{
+		juego->mover();
 		this->Invalidate();
 	}
 	};
