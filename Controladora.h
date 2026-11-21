@@ -19,6 +19,10 @@ private:
 	bool puede_ir_a(Unidad^ unidad, int fila, int columna);
 	void dibujar_alcance(Graphics^ graphics);
 	bool hay_alguien_moviendose();
+
+	int bajas_sovieticas;
+	int distancia(Unidad^ a, Unidad^ b);
+	void atacar(Unidad^ atacante, Unidad^ objetivo);
 public:
 	Controladora();
 	~Controladora();
@@ -35,16 +39,18 @@ Controladora::Controladora()
 	sprite_soldado = gcnew Bitmap("sprites/Sprite-0002.png");
 	sprite_soldado1 = gcnew Bitmap("sprites/Sprite-0003.png");
 	seleccionada = nullptr;
+	bajas_sovieticas = 0;
 
 	int tamano = mapa->obtener_tamano();
 	unidades->Add(gcnew Unidad(12, 5, Bando::Aleman, tamano, sprite_soldado));
 	unidades->Add(gcnew Unidad(12, 7, Bando::Aleman, tamano, sprite_soldado));
-	unidades->Add(gcnew Unidad(2, 20, Bando::Sovietico, tamano, sprite_soldado1));
+	unidades->Add(gcnew Unidad(11, 9, Bando::Sovietico, tamano, sprite_soldado1));
 }
 
 Controladora::~Controladora()
 {
 	delete sprite_soldado;
+	delete sprite_soldado1;
 }
 
 Unidad^ Controladora::buscar_unidad(int fila, int columna)
@@ -62,9 +68,9 @@ Unidad^ Controladora::buscar_unidad(int fila, int columna)
 
 bool Controladora::puede_ir_a(Unidad^ unidad, int fila, int columna)
 {
-	int distancia = Math::Abs(unidad->obtener_fila() - fila) + Math::Abs(unidad->obtener_columna() - columna);
+	int pasos = Math::Abs(unidad->obtener_fila() - fila) + Math::Abs(unidad->obtener_columna() - columna);
 
-	if (distancia > unidad->obtener_movimiento())
+	if (pasos > unidad->obtener_movimiento())
 	{
 		return false;
 	}
@@ -110,6 +116,19 @@ void Controladora::dibujar_alcance(Graphics^ graphics)
 		}
 	}
 
+	SolidBrush^ rojo = gcnew SolidBrush(Color::FromArgb(140, 255, 0, 0));
+
+	for (int i = 0; i < unidades->Count; i++)
+	{
+		Unidad^ otra = unidades[i];
+
+		if (otra->obtener_bando() != seleccionada->obtener_bando() && distancia(seleccionada, otra) == 1)
+		{
+			graphics->FillRectangle(rojo, otra->obtener_columna() * tamano, otra->obtener_fila() * tamano, tamano, tamano);
+		}
+	}
+
+	delete rojo;
 	delete azul;
 	delete amarillo;
 }
@@ -143,6 +162,12 @@ void Controladora::clic(int x, int y)
 		seleccionada = unidad;
 	}
 
+	else if (unidad != nullptr && seleccionada != nullptr && distancia(seleccionada, unidad) == 1)
+	{
+		atacar(seleccionada, unidad);
+		seleccionada = nullptr;
+	}
+
 	else if (seleccionada != nullptr && puede_ir_a(seleccionada, fila, columna))
 	{
 		seleccionada->mover_a(fila, columna);
@@ -173,5 +198,25 @@ void Controladora::mover()
 	for (int i = 0; i < unidades->Count; i++)
 	{
 		unidades[i]->animar();
+	}
+}
+
+int Controladora::distancia(Unidad^ a, Unidad^ b)
+{
+	return Math::Abs(a->obtener_fila() - b->obtener_fila()) + Math::Abs(a->obtener_columna() - b->obtener_columna());
+}
+
+void Controladora::atacar(Unidad^ atacante, Unidad^ objetivo)
+{
+	objetivo->recibir_danio(3);
+
+	if (!objetivo->esta_viva())
+	{
+		unidades->Remove(objetivo);
+
+		if (objetivo->obtener_bando() == Bando::Sovietico)
+		{
+			bajas_sovieticas = bajas_sovieticas + 1;
+		}
 	}
 }

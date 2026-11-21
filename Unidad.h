@@ -89,6 +89,17 @@ void Unidad::dibujar(Graphics^ graphics)
 	graphics->InterpolationMode = System::Drawing::Drawing2D::InterpolationMode::NearestNeighbor;
 	graphics->PixelOffsetMode = System::Drawing::Drawing2D::PixelOffsetMode::Half;
 	graphics->DrawImage(sprite, destino, origen, GraphicsUnit::Pixel);
+
+	if (vida < vida_maxima)
+	{
+		int ancho_barra = (tamano - 6) * vida / vida_maxima;
+		SolidBrush^ fondo = gcnew SolidBrush(Color::Black);
+		SolidBrush^ barra = gcnew SolidBrush(Color::LimeGreen);
+		graphics->FillRectangle(fondo, x + 3, y + tamano - 5, tamano - 6, 4);
+		graphics->FillRectangle(barra, x + 3, y + tamano - 5, ancho_barra, 4);
+		delete fondo;
+		delete barra;
+	}
 }
 
 int Unidad::obtener_fila()
