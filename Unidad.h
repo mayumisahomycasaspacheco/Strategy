@@ -21,6 +21,7 @@ private:
 	int contador;
 	int movimiento;
 	int desplazamiento_y;
+	bool ya_actuo;
 public:
 	Unidad(int fila, int columa, Bando bando, int tamano, Bitmap^ sprite);
 	~Unidad();
@@ -35,6 +36,9 @@ public:
 	bool en_movimiento();
 	void recibir_danio(int danio);
 	bool esta_viva();
+	bool obtener_ya_actuo();
+	void marcar_actuo();
+	void nuevo_turno();
 };
 
 Unidad::Unidad(int fila, int columna, Bando bando, int tamano, Bitmap^ sprite)
@@ -55,6 +59,7 @@ Unidad::Unidad(int fila, int columna, Bando bando, int tamano, Bitmap^ sprite)
 	contador = 0;
 	movimiento = 3;
 	desplazamiento_y = -12;
+	ya_actuo = false;
 }
 
 Unidad::~Unidad()
@@ -74,6 +79,11 @@ void Unidad::dibujar(Graphics^ graphics)
 	else
 	{
 		color_bando = Color::FromArgb(160, 178, 34, 34);
+	}
+
+	if (ya_actuo)
+	{
+		color_bando = Color::FromArgb(160, 120, 120, 120);
 	}
 
 	SolidBrush^ aro = gcnew SolidBrush(color_bando);
@@ -238,4 +248,19 @@ void Unidad::recibir_danio(int danio)
 bool Unidad::esta_viva()
 {
 	return vida > 0;
+}
+
+bool Unidad::obtener_ya_actuo()
+{
+	return ya_actuo;
+}
+
+void Unidad::marcar_actuo()
+{
+	ya_actuo = true;
+}
+
+void Unidad::nuevo_turno()
+{
+	ya_actuo = false;
 }

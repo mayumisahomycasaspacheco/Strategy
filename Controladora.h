@@ -23,6 +23,9 @@ private:
 	int bajas_sovieticas;
 	int distancia(Unidad^ a, Unidad^ b);
 	void atacar(Unidad^ atacante, Unidad^ objetivo);
+
+	int numero_turno;
+	void dibujar_panel(Graphics^ graphics);
 public:
 	Controladora();
 	~Controladora();
@@ -30,6 +33,8 @@ public:
 	void dibujar(Graphics^ graphics);
 	void clic(int x, int y);
 	void mover();
+
+	void terminar_turno();
 };
 
 Controladora::Controladora()
@@ -40,6 +45,8 @@ Controladora::Controladora()
 	sprite_soldado1 = gcnew Bitmap("sprites/Sprite-0003.png");
 	seleccionada = nullptr;
 	bajas_sovieticas = 0;
+
+	numero_turno = 1;
 
 	int tamano = mapa->obtener_tamano();
 	unidades->Add(gcnew Unidad(12, 5, Bando::Aleman, tamano, sprite_soldado));
@@ -219,4 +226,40 @@ void Controladora::atacar(Unidad^ atacante, Unidad^ objetivo)
 			bajas_sovieticas = bajas_sovieticas + 1;
 		}
 	}
+}
+
+void Controladora::terminar_turno()
+{
+	for (int i = 0; i < unidades->Count; i++)
+	{
+		unidades[i]->nuevo_turno();
+	}
+
+	seleccionada = nullptr;
+	numero_turno = numero_turno + 1;
+}
+
+void Controladora::dibujar_panel(Graphics^ graphics)
+{
+	int alemanes = 0;
+	int sovieticos = 0;
+
+	for (int i = 0; i < unidades->Count; i++)
+	{
+		if (unidades[i]->obtener_bando() == Bando::Aleman)
+		{
+			alemanes = alemanes + 1;
+		}
+
+		else
+		{
+			sovieticos = sovieticos + 1;
+		}
+	}
+
+	graphics->FillRectangle(Brushes::Black, 0, 512, 1024, 128);
+	Font^ letra = gcnew Font("Consolas", 14.0f);
+	graphics->DrawString(String::Format("Turno {0}", numero_turno), letra, Brushes::White, 15, 525);
+	graphics->DrawString(String::Format("Alemanes: {0} Sovieticos: {1} Bajas sovieticas: {2}", alemanes, sovieticos, bajas_sovieticas), letra, Brushes::White, 15, 555);
+	graphics->DrawString("Clic: elegir / mover / atacar Espacio: Terminar turno", letra, Brushes::Gray, 15, 595);
 }
