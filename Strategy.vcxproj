@@ -139,10 +139,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Form_Game.cpp" />
+    <ClCompile Include="Form_Lore.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Controladora.h" />
     <ClInclude Include="Form_Game.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
+    <ClInclude Include="Form_Lore.h">
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="Mapa.h" />
