@@ -301,3 +301,69 @@ void Controladora::dibujar_panel(Graphics^ graphics)
 	graphics->DrawString("Clic: elegir / mover / atacar Espacio: Terminar turno", letra, Brushes::Gray, 15, 595);
 	delete letra;
 }
+
+Unidad^ Controladora::buscar_aleman_mas_cercano(Unidad^ desde)
+{
+	Unidad^ cercano = nullptr;
+	int menor = 1000;
+
+	for (int i = 0; i < unidades->Count; i++)
+	{
+		if (unidades[i]->obtener_bando() == Bando::Aleman)
+		{
+			int d = distancia(desde, unidades[i]);
+
+			if (d < menor)
+			{
+				menor = d;
+				cercano = unidades[i];
+			}
+		}
+	}
+
+	return cercano;
+}
+
+void Controladora::actuar_enemigo(Unidad^ enemigo)
+{
+	Unidad^ objetivo = buscar_aleman_mas_cercano(enemigo);
+
+	if (objetivo == nullptr)
+	{
+		return;
+	}
+
+	if (distancia(enemigo, objetivo) == 1)
+	{
+		atacar(enemigo, objetivo);
+		return;
+	}
+
+	int mov = enemigo->obtener_movimiento();
+	int mejor_fila = -1;
+	int mejor_columna = -1;
+	int mejor_distancia = distancia(enemigo, objetivo);
+
+	for (int f = enemigo->obtener_fila() - mov; f <= enemigo->obtener_fila() + mov; f++)
+	{
+		for (int c = enemigo->obtener_columna() - mov; c <= enemigo->obtener_columna() + mov; c++)
+		{
+			if (puede_ir_a(enemigo, f, c))
+			{
+				int d = Math::Abs(f - objetivo->obtener_fila()) + Math::Abs(c - objetivo->obtener_columna());
+
+				if (d < mejor_distancia)
+				{
+					mejor_distancia = d;
+					mejor_fila = f;
+					mejor_columna = c;
+				}
+			}
+		}
+	}
+
+	if (mejor_fila != -1)
+	{
+		enemigo->mover_a(mejor_fila, mejor_columna);
+	}
+}
