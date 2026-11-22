@@ -6,6 +6,8 @@ using namespace System;
 using namespace System::Drawing;
 using namespace System::Collections::Generic;
 
+enum class Turno { Aleman, Sovietico };
+
 ref class Controladora
 {
 private:
@@ -26,6 +28,15 @@ private:
 
 	int numero_turno;
 	void dibujar_panel(Graphics^ graphics);
+
+	Turno turno;
+	List<Unidad^>^ cola_enemiga;
+	int indice_enemigo;
+	int espera;
+
+	Unidad^ buscar_aleman_mas_cercano(Unidad^ desde);
+	void actuar_enemigo(Unidad^ enemigo);
+	void turno_enemigo();
 public:
 	Controladora();
 	~Controladora();
@@ -52,6 +63,15 @@ Controladora::Controladora()
 	unidades->Add(gcnew Unidad(12, 5, Bando::Aleman, tamano, sprite_soldado));
 	unidades->Add(gcnew Unidad(12, 7, Bando::Aleman, tamano, sprite_soldado));
 	unidades->Add(gcnew Unidad(11, 9, Bando::Sovietico, tamano, sprite_soldado1));
+
+	unidades->Add(gcnew Unidad(10, 14, Bando::Sovietico, tamano, sprite_soldado1));
+	unidades->Add(gcnew Unidad(9, 16, Bando::Sovietico, tamano, sprite_soldado1));
+	unidades->Add(gcnew Unidad(11, 18, Bando::Sovietico, tamano, sprite_soldado1));
+	
+	turno = Turno::Aleman;
+	cola_enemiga = gcnew List<Unidad^>();
+	indice_enemigo = 0;
+	espera = 0;
 }
 
 Controladora::~Controladora()
@@ -149,6 +169,8 @@ void Controladora::dibujar(Graphics^ graphics)
 	{
 		unidades[i]->dibujar(graphics);
 	}
+
+	dibujar_panel(graphics);
 }
 
 void Controladora::clic(int x, int y)
@@ -169,15 +191,17 @@ void Controladora::clic(int x, int y)
 		seleccionada = unidad;
 	}
 
-	else if (unidad != nullptr && seleccionada != nullptr && distancia(seleccionada, unidad) == 1)
+	else if (unidad != nullptr && unidad->obtener_bando() == Bando::Sovietico && seleccionada != nullptr && distancia(seleccionada, unidad) == 1)
 	{
 		atacar(seleccionada, unidad);
+		seleccionada->marcar_actuo();
 		seleccionada = nullptr;
 	}
 
 	else if (seleccionada != nullptr && puede_ir_a(seleccionada, fila, columna))
 	{
 		seleccionada->mover_a(fila, columna);
+		seleccionada->marcar_actuo();
 		seleccionada = nullptr;
 	}
 
@@ -230,13 +254,26 @@ void Controladora::atacar(Unidad^ atacante, Unidad^ objetivo)
 
 void Controladora::terminar_turno()
 {
-	for (int i = 0; i < unidades->Count; i++)
+	if (turno != Turno::Aleman)
 	{
-		unidades[i]->nuevo_turno();
+		return;
 	}
 
 	seleccionada = nullptr;
-	numero_turno = numero_turno + 1;
+	turno = Turno::Sovietico;
+
+	cola_enemiga->Clear();
+
+	for (int i = 0; i < unidades->Count; i++)
+	{
+		if (unidades[i]->obtener_bando() == Bando::Sovietico)
+		{
+			cola_enemiga->Add(unidades[i]);
+		}
+	}
+
+	indice_enemigo = 0;
+	espera = 0;
 }
 
 void Controladora::dibujar_panel(Graphics^ graphics)
@@ -262,4 +299,5 @@ void Controladora::dibujar_panel(Graphics^ graphics)
 	graphics->DrawString(String::Format("Turno {0}", numero_turno), letra, Brushes::White, 15, 525);
 	graphics->DrawString(String::Format("Alemanes: {0} Sovieticos: {1} Bajas sovieticas: {2}", alemanes, sovieticos, bajas_sovieticas), letra, Brushes::White, 15, 555);
 	graphics->DrawString("Clic: elegir / mover / atacar Espacio: Terminar turno", letra, Brushes::Gray, 15, 595);
+	delete letra;
 }

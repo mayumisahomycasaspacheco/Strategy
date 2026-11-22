@@ -78,6 +78,7 @@ namespace Strategy {
 			this->StartPosition = System::Windows::Forms::FormStartPosition::CenterScreen;
 			this->Text = L"Eagle\'s Twilight";
 			this->Paint += gcnew System::Windows::Forms::PaintEventHandler(this, &Form_Game::Form_Game_Paint);
+			this->KeyDown += gcnew System::Windows::Forms::KeyEventHandler(this, &Form_Game::Form_Game_KeyDown);
 			this->MouseClick += gcnew System::Windows::Forms::MouseEventHandler(this, &Form_Game::Form_Game_MouseClick);
 			this->ResumeLayout(false);
 
@@ -96,6 +97,14 @@ namespace Strategy {
 	{
 		juego->mover();
 		this->Invalidate();
+	}
+	private: System::Void Form_Game_KeyDown(System::Object^ sender, System::Windows::Forms::KeyEventArgs^ e) 
+	{
+		if (e->KeyCode == Keys::Space)
+		{
+			juego->terminar_turno();
+			this->Invalidate();
+		}
 	}
 	};
 }
