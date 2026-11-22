@@ -37,6 +37,8 @@ private:
 	Unidad^ buscar_aleman_mas_cercano(Unidad^ desde);
 	void actuar_enemigo(Unidad^ enemigo);
 	void turno_enemigo();
+
+	bool todos_los_alemanes_actuaron();
 public:
 	Controladora();
 	~Controladora();
@@ -175,6 +177,11 @@ void Controladora::dibujar(Graphics^ graphics)
 
 void Controladora::clic(int x, int y)
 {
+	if (turno != Turno::Aleman)
+	{
+		return;
+	}
+
 	if (hay_alguien_moviendose())
 	{
 		return;
@@ -186,7 +193,7 @@ void Controladora::clic(int x, int y)
 
 	Unidad^ unidad = buscar_unidad(fila, columna);
 
-	if (unidad != nullptr && unidad->obtener_bando() == Bando::Aleman)
+	if (unidad != nullptr && unidad->obtener_bando() == Bando::Aleman && !unidad->obtener_ya_actuo())
 	{
 		seleccionada = unidad;
 	}
@@ -209,6 +216,11 @@ void Controladora::clic(int x, int y)
 	{
 		seleccionada = nullptr;
 	}
+
+	if (todos_los_alemanes_actuaron())
+	{
+		terminar_turno();
+	}
 }
 
 bool Controladora::hay_alguien_moviendose()
@@ -229,6 +241,17 @@ void Controladora::mover()
 	for (int i = 0; i < unidades->Count; i++)
 	{
 		unidades[i]->animar();
+	}
+
+	if (turno == Turno::Sovietico && !hay_alguien_moviendose())
+	{
+		espera = espera + 1;
+
+		if (espera >= 15)
+		{
+			espera = 0;
+			turno_enemigo();
+		}
 	}
 }
 
@@ -296,7 +319,21 @@ void Controladora::dibujar_panel(Graphics^ graphics)
 
 	graphics->FillRectangle(Brushes::Black, 0, 512, 1024, 128);
 	Font^ letra = gcnew Font("Consolas", 14.0f);
-	graphics->DrawString(String::Format("Turno {0}", numero_turno), letra, Brushes::White, 15, 525);
+
+	String^ de_quien;
+
+	if (turno == Turno::Aleman)
+	{
+		de_quien = "Alemanes";
+	}
+
+	else
+	{
+		de_quien = "Sovieticos";
+	}
+
+	graphics->DrawString(String::Format("Turno {0} - {1}", numero_turno, de_quien), letra, Brushes::White, 15, 525);
+
 	graphics->DrawString(String::Format("Alemanes: {0} Sovieticos: {1} Bajas sovieticas: {2}", alemanes, sovieticos, bajas_sovieticas), letra, Brushes::White, 15, 555);
 	graphics->DrawString("Clic: elegir / mover / atacar Espacio: Terminar turno", letra, Brushes::Gray, 15, 595);
 	delete letra;
@@ -366,4 +403,38 @@ void Controladora::actuar_enemigo(Unidad^ enemigo)
 	{
 		enemigo->mover_a(mejor_fila, mejor_columna);
 	}
+}
+
+void Controladora::turno_enemigo()
+{
+	if (indice_enemigo < cola_enemiga->Count)
+	{
+		Unidad^ enemigo = cola_enemiga[indice_enemigo];
+		indice_enemigo = indice_enemigo + 1;
+		actuar_enemigo(enemigo);
+	}
+
+	else
+	{
+		for (int i = 0; i < unidades->Count; i++)
+		{
+			unidades[i]->nuevo_turno();
+		}
+
+		turno = Turno::Aleman;
+		numero_turno = numero_turno + 1;
+	}
+}
+
+bool Controladora::todos_los_alemanes_actuaron()
+{
+	for (int i = 0; i < unidades->Count; i++)
+	{
+		if (unidades[i]->obtener_bando() == Bando::Aleman && !unidades[i]->obtener_ya_actuo())
+		{
+			return false;
+		}
+	}
+
+	return true;
 }

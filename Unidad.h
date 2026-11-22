@@ -156,6 +156,11 @@ void Unidad::mover_a(int nueva_fila, int nueva_columna)
 		{
 			direccion = 0;
 		}
+
+		else
+		{
+			direccion = 1;
+		}
 	}
 
 	fila = nueva_fila;
