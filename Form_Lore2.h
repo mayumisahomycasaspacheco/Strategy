@@ -79,12 +79,12 @@ namespace Strategy {
 			this->label4->Font = (gcnew System::Drawing::Font(L"Consolas", 16.2F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
 			this->label4->ForeColor = System::Drawing::SystemColors::ControlLightLight;
-			this->label4->Location = System::Drawing::Point(241, 516);
+			this->label4->Location = System::Drawing::Point(241, 515);
 			this->label4->Name = L"label4";
-			this->label4->Size = System::Drawing::Size(645, 99);
+			this->label4->Size = System::Drawing::Size(675, 99);
 			this->label4->TabIndex = 4;
-			this->label4->Text = L"Apuren los restos del ejército. Reclutad a\r\nancianos, niños, mujeres y jóvenes, s"
-				L"in\r\nexecpción: hay que llenar los huecos.";
+			this->label4->Text = L"Rush the remnants of the army. Recruit \r\nthe elderly, children, women, and young "
+				L"men.\r\nException: the gaps must be filled.";
 			// 
 			// button1
 			// 
@@ -92,11 +92,11 @@ namespace Strategy {
 			this->button1->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
 			this->button1->Font = (gcnew System::Drawing::Font(L"Consolas", 12, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			this->button1->Location = System::Drawing::Point(876, 596);
+			this->button1->Location = System::Drawing::Point(876, 594);
 			this->button1->Name = L"button1";
-			this->button1->Size = System::Drawing::Size(136, 32);
+			this->button1->Size = System::Drawing::Size(136, 34);
 			this->button1->TabIndex = 5;
-			this->button1->Text = L"Continuar";
+			this->button1->Text = L"Continue";
 			this->button1->UseVisualStyleBackColor = false;
 			this->button1->Click += gcnew System::EventHandler(this, &Form_Lore2::button1_Click);
 			// 

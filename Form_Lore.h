@@ -90,7 +90,7 @@ namespace Strategy {
 			this->label2->Name = L"label2";
 			this->label2->Size = System::Drawing::Size(359, 43);
 			this->label2->TabIndex = 1;
-			this->label2->Text = L"Batalla de Berlín";
+			this->label2->Text = L"Battle of Berlin";
 			// 
 			// label3
 			// 
@@ -102,7 +102,7 @@ namespace Strategy {
 			this->label3->Name = L"label3";
 			this->label3->Size = System::Drawing::Size(351, 36);
 			this->label3->TabIndex = 2;
-			this->label3->Text = L"BERLÍN, ABRIL DE 1945";
+			this->label3->Text = L"BERLIN, APRIL 1945";
 			// 
 			// label4
 			// 
@@ -114,8 +114,7 @@ namespace Strategy {
 			this->label4->Name = L"label4";
 			this->label4->Size = System::Drawing::Size(870, 66);
 			this->label4->TabIndex = 3;
-			this->label4->Text = L"El ejercito rojo está en las puertas de la ciudad. Lo que\r\nqueda del ejército ale"
-				L"mán resiste entre las ruinas.";
+			this->label4->Text = L"The Red Army is at the city gates. What remains \r\nof the German" L"army. The man resists among the ruins.";
 			// 
 			// label_flecha
 			// 

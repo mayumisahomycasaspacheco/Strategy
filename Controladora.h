@@ -324,18 +324,18 @@ void Controladora::dibujar_panel(Graphics^ graphics)
 
 	if (turno == Turno::Aleman)
 	{
-		de_quien = "Alemanes";
+		de_quien = "Germans";
 	}
 
 	else
 	{
-		de_quien = "Sovieticos";
+		de_quien = "Soviets";
 	}
 
-	graphics->DrawString(String::Format("Turno {0} - {1}", numero_turno, de_quien), letra, Brushes::White, 15, 525);
+	graphics->DrawString(String::Format("Shift {0} - {1}", numero_turno, de_quien), letra, Brushes::White, 15, 525);
 
-	graphics->DrawString(String::Format("Alemanes: {0} Sovieticos: {1} Bajas sovieticas: {2}", alemanes, sovieticos, bajas_sovieticas), letra, Brushes::White, 15, 555);
-	graphics->DrawString("Clic: elegir / mover / atacar Espacio: Terminar turno", letra, Brushes::Gray, 15, 595);
+	graphics->DrawString(String::Format("Germans: {0} / Soviets: {1} / Soviet casualties: {2}", alemanes, sovieticos, bajas_sovieticas), letra, Brushes::White, 15, 555);
+	graphics->DrawString("Clic: choose / move / attack Space: End shift", letra, Brushes::Gray, 15, 595);
 	delete letra;
 }
 
