@@ -39,6 +39,7 @@ public:
 	bool obtener_ya_actuo();
 	void marcar_actuo();
 	void nuevo_turno();
+	void establecer_vida(int nueva_vida);
 };
 
 Unidad::Unidad(int fila, int columna, Bando bando, int tamano, Bitmap^ sprite)
@@ -268,4 +269,10 @@ void Unidad::marcar_actuo()
 void Unidad::nuevo_turno()
 {
 	ya_actuo = false;
+}
+
+void Unidad::establecer_vida(int nueva_vida)
+{
+	vida = nueva_vida;
+	vida_maxima = nueva_vida;
 }
