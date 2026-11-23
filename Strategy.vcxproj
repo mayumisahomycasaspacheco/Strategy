@@ -140,6 +140,7 @@
   <ItemGroup>
     <ClCompile Include="Form_Game.cpp" />
     <ClCompile Include="Form_Lore.cpp" />
+    <ClCompile Include="Form_Lore2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Controladora.h" />
@@ -149,12 +150,21 @@
     <ClInclude Include="Form_Lore.h">
       <FileType>CppForm</FileType>
     </ClInclude>
+    <ClInclude Include="Form_Lore2.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
     <ClInclude Include="Mapa.h" />
     <ClInclude Include="Unidad.h" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Form_Game.resx">
       <DependentUpon>Form_Game.h</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form_Lore.resx">
+      <DependentUpon>Form_Lore.h</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form_Lore2.resx">
+      <DependentUpon>Form_Lore2.h</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
