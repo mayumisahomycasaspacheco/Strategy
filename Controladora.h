@@ -39,6 +39,8 @@ private:
 	void turno_enemigo();
 
 	bool todos_los_alemanes_actuaron();
+
+	void aparecer_unidad(int fila, int columna, Bando bando, Bitmap^ sprite, int vida);
 public:
 	Controladora();
 	~Controladora();
@@ -437,4 +439,16 @@ bool Controladora::todos_los_alemanes_actuaron()
 	}
 
 	return true;
+}
+
+void Controladora::aparecer_unidad(int fila, int columna, Bando bando, Bitmap^ sprite, int vida)
+{
+	if (!mapa->es_transitable(fila, columna) || buscar_unidad(fila, columna) != nullptr)
+	{
+		return;
+	}
+
+	Unidad^ nueva = gcnew Unidad(fila, columna, bando, mapa->obtener_tamano(), sprite);
+	nueva->establecer_vida(vida);
+	unidades->Add(nueva);
 }
