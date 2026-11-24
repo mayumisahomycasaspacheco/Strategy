@@ -15,6 +15,9 @@ private:
 	List<Unidad^>^ unidades;
 	Bitmap^ sprite_soldado;
 	Bitmap^ sprite_soldado1;
+	Bitmap^ sprite_abuela;
+	Bitmap^ sprite_mujer;
+	Bitmap^ sprite_nino;
 	Unidad^ seleccionada;
 
 	Unidad^ buscar_unidad(int fila, int columna);
@@ -23,6 +26,7 @@ private:
 	bool hay_alguien_moviendose();
 
 	int bajas_sovieticas;
+	int sovieticos_iniciales;
 	int distancia(Unidad^ a, Unidad^ b);
 	void atacar(Unidad^ atacante, Unidad^ objetivo);
 
@@ -37,10 +41,13 @@ private:
 	Unidad^ buscar_aleman_mas_cercano(Unidad^ desde);
 	void actuar_enemigo(Unidad^ enemigo);
 	void turno_enemigo();
-
 	bool todos_los_alemanes_actuaron();
-
 	void aparecer_unidad(int fila, int columna, Bando bando, Bitmap^ sprite, int vida);
+
+	bool evento_zhukov;
+	void revisar_eventos();
+
+	void aparecer_sovieticos(int cantidad);
 public:
 	Controladora();
 	~Controladora();
@@ -58,8 +65,12 @@ Controladora::Controladora()
 	unidades = gcnew List<Unidad^>();
 	sprite_soldado = gcnew Bitmap("sprites/Sprite-0002.png");
 	sprite_soldado1 = gcnew Bitmap("sprites/Sprite-0003.png");
+	sprite_abuela = gcnew Bitmap("sprites/Sprite-0006.png");
+	sprite_mujer = gcnew Bitmap("sprites/Sprite-0007.png");
+	sprite_nino = gcnew Bitmap("sprites/Sprite-0008.png");
 	seleccionada = nullptr;
 	bajas_sovieticas = 0;
+	evento_zhukov = false;
 
 	numero_turno = 1;
 
@@ -71,17 +82,39 @@ Controladora::Controladora()
 	unidades->Add(gcnew Unidad(10, 14, Bando::Sovietico, tamano, sprite_soldado1));
 	unidades->Add(gcnew Unidad(9, 16, Bando::Sovietico, tamano, sprite_soldado1));
 	unidades->Add(gcnew Unidad(11, 18, Bando::Sovietico, tamano, sprite_soldado1));
+	aparecer_unidad(10, 21, Bando::Sovietico, sprite_soldado1, 10);
+	aparecer_unidad(11, 25, Bando::Sovietico, sprite_soldado1, 10);
+	
+	sovieticos_iniciales = 0;
+
+	for (int i = 0; i < unidades->Count; i++)
+	{
+		if (unidades[i]->obtener_bando() == Bando::Sovietico)
+		{
+			sovieticos_iniciales = sovieticos_iniciales + 1;
+		}
+	}
 	
 	turno = Turno::Aleman;
 	cola_enemiga = gcnew List<Unidad^>();
 	indice_enemigo = 0;
 	espera = 0;
+
+	aparecer_unidad(13, 4, Bando::Aleman, sprite_abuela, 5);
+	aparecer_unidad(13, 5, Bando::Aleman, sprite_mujer, 5);
+	aparecer_unidad(13, 6, Bando::Aleman, sprite_nino, 5);
+	aparecer_unidad(13, 7, Bando::Aleman, sprite_abuela, 5);
+	aparecer_unidad(13, 8, Bando::Aleman, sprite_mujer, 5);
+	aparecer_unidad(13, 9, Bando::Aleman, sprite_nino, 5);
 }
 
 Controladora::~Controladora()
 {
 	delete sprite_soldado;
 	delete sprite_soldado1;
+	delete sprite_abuela;
+	delete sprite_mujer;
+	delete sprite_nino;
 }
 
 Unidad^ Controladora::buscar_unidad(int fila, int columna)
@@ -273,6 +306,7 @@ void Controladora::atacar(Unidad^ atacante, Unidad^ objetivo)
 		if (objetivo->obtener_bando() == Bando::Sovietico)
 		{
 			bajas_sovieticas = bajas_sovieticas + 1;
+			revisar_eventos();
 		}
 	}
 }
@@ -338,6 +372,12 @@ void Controladora::dibujar_panel(Graphics^ graphics)
 
 	graphics->DrawString(String::Format("Germans: {0} / Soviets: {1} / Soviet casualties: {2}", alemanes, sovieticos, bajas_sovieticas), letra, Brushes::White, 15, 555);
 	graphics->DrawString("Clic: choose / move / attack Space: End shift", letra, Brushes::Gray, 15, 595);
+	
+	if (evento_zhukov)
+	{
+		graphics->DrawString("Zhukov event", letra, Brushes::Yellow, 700, 525);
+	}
+
 	delete letra;
 }
 
@@ -451,4 +491,17 @@ void Controladora::aparecer_unidad(int fila, int columna, Bando bando, Bitmap^ s
 	Unidad^ nueva = gcnew Unidad(fila, columna, bando, mapa->obtener_tamano(), sprite);
 	nueva->establecer_vida(vida);
 	unidades->Add(nueva);
+}
+
+void Controladora::aparecer_sovieticos(int cantidad)
+{
+
+}
+
+void Controladora::revisar_eventos()
+{
+	if (!evento_zhukov && bajas_sovieticas * 4 >= sovieticos_iniciales)
+	{
+		evento_zhukov = true;
+	}
 }
