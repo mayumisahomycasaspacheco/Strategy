@@ -27,6 +27,9 @@ private:
 
 	int bajas_sovieticas;
 	int sovieticos_iniciales;
+	int sovieticos_oleada;
+	int bajas_oleada;
+	int contar_sovieticos();
 	int distancia(Unidad^ a, Unidad^ b);
 	void atacar(Unidad^ atacante, Unidad^ objetivo);
 
@@ -46,11 +49,10 @@ private:
 
 	bool evento_zhukov;
 	void revisar_eventos();
-	void mostrar_dialogo(String^ nombre, String^ texto);
+	void bombardeo();
 	void agregar_linea(String^ nombre, String^ texto);
 	void iniciar_dialogo();
 	void dibujar_dialogo(Graphics^ graphics);
-	void agregar_lista(String^ nombre, String^ texto);
 	void aparecer_sovieticos(int cantidad);
 
 	bool dialogo_activo;
@@ -82,6 +84,8 @@ Controladora::Controladora()
 	seleccionada = nullptr;
 	bajas_sovieticas = 0;
 	evento_zhukov = false;
+	sovieticos_oleada = 0;
+	bajas_oleada = 0;
 
 	dialogo_activo = false;
 	dialogo_nombre = "";
@@ -238,7 +242,21 @@ void Controladora::clic(int x, int y)
 {
 	if (dialogo_activo)
 	{
-		dialogo_activo = false;
+		dialogo_indice = dialogo_indice + 1;
+
+		if (dialogo_indice < dialogo_nombres->Count)
+		{
+			dialogo_nombre = dialogo_nombres[dialogo_indice];
+			dialogo_texto = dialogo_textos[dialogo_indice];
+		}
+
+		else
+		{
+			dialogo_activo = false;
+			dialogo_nombres->Clear();
+			dialogo_textos->Clear();
+		}
+
 		return;
 	}
 
@@ -265,8 +283,9 @@ void Controladora::clic(int x, int y)
 
 	else if (unidad != nullptr && unidad->obtener_bando() == Bando::Sovietico && seleccionada != nullptr && distancia(seleccionada, unidad) == 1)
 	{
-		atacar(seleccionada, unidad);
-		seleccionada->marcar_actuo();
+		Unidad^ atacante = seleccionada;
+		atacar(atacante, unidad);
+		atacante->marcar_actuo();
 		seleccionada = nullptr;
 	}
 
@@ -341,6 +360,7 @@ void Controladora::atacar(Unidad^ atacante, Unidad^ objetivo)
 		if (objetivo->obtener_bando() == Bando::Sovietico)
 		{
 			bajas_sovieticas = bajas_sovieticas + 1;
+			bajas_oleada = bajas_oleada + 1;
 			revisar_eventos();
 		}
 	}
@@ -417,6 +437,8 @@ void Controladora::dibujar_panel(Graphics^ graphics)
 	{
 		graphics->DrawString("Zhukov event", letra, Brushes::Yellow, 700, 525);
 	}
+
+	graphics->DrawString(String::Format("Wave kills: {0} / {1}", bajas_oleada, sovieticos_oleada), letra, Brushes::Yellow, 700, 555);
 
 	delete letra;
 }
@@ -556,17 +578,18 @@ void Controladora::revisar_eventos()
 	{
 		evento_zhukov = true;
 		aparecer_sovieticos(sovieticos_iniciales * 2);
+		sovieticos_oleada = contar_sovieticos();
+		bajas_oleada = 0;
 
-		mostrar_dialogo("GENERAL HELMUTH WEIDLING", "Marshal Zhukov has arrived. Hold the line. Defend to the last man.");
+		agregar_linea("MARSHAL ZHUKOV", "Fresh divisions have reached the city. Berlin will fall");
+		agregar_linea("GENERAL HELMUTH WEIDLING", "Hold the line. Defend to the last man.");
+		iniciar_dialogo();
 	}
-}
 
-void Controladora::mostrar_dialogo(String^ nombre, String^ texto)
-{
-	dialogo_activo = true;
-	dialogo_nombre = nombre;
-	dialogo_texto = texto;
-	seleccionada = nullptr;
+	if (evento_zhukov && sovieticos_oleada > 0 && bajas_oleada * 10 >= sovieticos_oleada * 9)
+	{
+		bombardeo();
+	}
 }
 
 void Controladora::agregar_linea(String^ nombre, String^ texto)
@@ -605,4 +628,28 @@ void Controladora::dibujar_dialogo(Graphics^ graphics)
 
 	delete letra_nombre;
 	delete letra;
+}
+
+int Controladora::contar_sovieticos()
+{
+	int total = 0;
+
+	for (int i = 0; i < unidades->Count; i++)
+	{
+		if (unidades[i]->obtener_bando() == Bando::Sovietico)
+		{
+			total = total + 1;
+		}
+	}
+
+	return total;
+}
+
+void Controladora::bombardeo()
+{
+	agregar_linea("GENERAL HELMUTH WEIDLING", "Artillery! Take cover!");
+	iniciar_dialogo();
+
+	bajas_oleada = 0;
+	sovieticos_oleada = 0;
 }
