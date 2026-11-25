@@ -50,12 +50,15 @@ private:
 	bool evento_zhukov;
 	void revisar_eventos();
 	void bombardeo();
+	void perder_tropas_alemanas();
 	void agregar_linea(String^ nombre, String^ texto);
 	void iniciar_dialogo();
 	void dibujar_dialogo(Graphics^ graphics);
 	void aparecer_sovieticos(int cantidad);
 
 	bool dialogo_activo;
+	bool derrota;
+	int contar_alemanes();
 	String^ dialogo_nombre;
 	String^ dialogo_texto;
 	List<String^>^ dialogo_nombres;
@@ -88,6 +91,7 @@ Controladora::Controladora()
 	bajas_oleada = 0;
 
 	dialogo_activo = false;
+	derrota = false;
 	dialogo_nombre = "";
 	dialogo_texto = "";
 
@@ -236,6 +240,8 @@ void Controladora::dibujar(Graphics^ graphics)
 	{
 		dibujar_dialogo(graphics);
 	}
+
+	if ()
 }
 
 void Controladora::clic(int x, int y)
@@ -257,6 +263,11 @@ void Controladora::clic(int x, int y)
 			dialogo_textos->Clear();
 		}
 
+		return;
+	}
+
+	if (derrota)
+	{
 		return;
 	}
 
@@ -327,6 +338,17 @@ void Controladora::mover()
 		return;
 	}
 
+	if (derrota)
+	{
+		return;
+	}
+
+	if (contar_alemanes() == 0)
+	{
+		derrota = true;
+		return;
+	}
+
 	for (int i = 0; i < unidades->Count; i++)
 	{
 		unidades[i]->animar();
@@ -369,6 +391,11 @@ void Controladora::atacar(Unidad^ atacante, Unidad^ objetivo)
 void Controladora::terminar_turno()
 {
 	if (dialogo_activo)
+	{
+		return;
+	}
+
+	if (derrota)
 	{
 		return;
 	}
@@ -645,6 +672,21 @@ int Controladora::contar_sovieticos()
 	return total;
 }
 
+int Controladora::contar_alemanes()
+{
+	int total = 0;
+
+	for (int i = 0; i < unidades->Count; i++)
+	{
+		if (unidades[i]->obtener_bando() == Bando::Aleman)
+		{
+			total = total + 1;
+		}
+	}
+
+	return total;
+}
+
 void Controladora::bombardeo()
 {
 	agregar_linea("GENERAL HELMUTH WEIDLING", "Artillery! Take cover!");
@@ -652,4 +694,39 @@ void Controladora::bombardeo()
 
 	bajas_oleada = 0;
 	sovieticos_oleada = 0;
+}
+
+void Controladora::perder_tropas_alemanas()
+{
+	List<Unidad^>^ alemanes = gcnew List<Unidad^>();
+
+	for (int i = 0; i < unidades->Count; i++)
+	{
+		if (unidades[i]->obtener_bando() == Bando::Aleman)
+		{
+			alemanes->Add(unidades[i]);
+		}
+	}
+
+	int perdidas = (alemanes->Count + 1) / 2;
+	Random^ azar = gcnew Random();
+
+	for (int i = 0; i < perdidas; i++)
+	{
+		int elegido = azar->Next(alemanes->Count);
+		unidades->Remove(alemanes[elegido]);
+		alemanes->RemoveAt(elegido);
+	}
+}
+
+void Controladora::bombardeo()
+{
+	perder_tropas_alemanas();
+	aparecer_sovieticos(sovieticos_iniciales);
+
+	sovieticos_oleada = contar_sovieticos();
+	bajas_oleada = 0;
+
+	agregar_linea("GENERAL HELMUTH WEIDLING", "Artillery! Take cover!");
+	iniciar_dialogo();
 }
