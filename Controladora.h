@@ -29,6 +29,8 @@ private:
 	int sovieticos_iniciales;
 	int sovieticos_oleada;
 	int bajas_oleada;
+	int bombardeos;
+	int calcular_puntaje();
 	int contar_sovieticos();
 	int distancia(Unidad^ a, Unidad^ b);
 	void atacar(Unidad^ atacante, Unidad^ objetivo);
@@ -54,6 +56,7 @@ private:
 	void agregar_linea(String^ nombre, String^ texto);
 	void iniciar_dialogo();
 	void dibujar_dialogo(Graphics^ graphics);
+	void dibujar_derrota(Graphics^ graphics);
 	void aparecer_sovieticos(int cantidad);
 
 	bool dialogo_activo;
@@ -89,6 +92,7 @@ Controladora::Controladora()
 	evento_zhukov = false;
 	sovieticos_oleada = 0;
 	bajas_oleada = 0;
+	bombardeos = 0;
 
 	dialogo_activo = false;
 	derrota = false;
@@ -241,7 +245,12 @@ void Controladora::dibujar(Graphics^ graphics)
 		dibujar_dialogo(graphics);
 	}
 
-	if ()
+	if (derrota)
+	{
+		Font^ letra_grande = gcnew Font("Consolas", 48.0f, FontStyle::Bold);
+		graphics->DrawString("DEFEAT", letra_grande, Brushes::Red, 380, 220);
+		delete letra_grande;
+	}
 }
 
 void Controladora::clic(int x, int y)
@@ -721,6 +730,7 @@ void Controladora::perder_tropas_alemanas()
 
 void Controladora::bombardeo()
 {
+	bombardeos = bombardeos + 1;
 	perder_tropas_alemanas();
 	aparecer_sovieticos(sovieticos_iniciales);
 
@@ -729,4 +739,22 @@ void Controladora::bombardeo()
 
 	agregar_linea("GENERAL HELMUTH WEIDLING", "Artillery! Take cover!");
 	iniciar_dialogo();
+}
+
+int Controladora::calcular_puntaje()
+{
+	return bajas_sovieticas * 100 + bombardeos * 500 + numero_turno * 10;
+}
+
+void Controladora::dibujar_derrota(Graphics^ graphics)
+{
+	graphics->FillRectangle(Brushes::Black, 0, 0, 1024, 640);
+
+	SolidBrush^ dorado = gcnew SolidBrush(Color::FromArgb(216, 176, 64));
+	Font^ letra_titulo = gcnew Font("Consolas", 48.0f, FontStyle::Bold);
+	Font^ letra = gcnew Font("Consolas", 20.0f);
+
+	graphics->DrawString("BERLIN HAS FALLEN", letra_titulo, dorado, 190, 50);
+
+	graphics->DrawString(String::Format("Soviet casualties: {0}", bajas_sovieticas), letra, Brushes::White, );
 }
