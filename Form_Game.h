@@ -90,6 +90,13 @@ namespace Strategy {
 	}
 	private: System::Void Form_Game_MouseClick(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e) 
 	{
+		if (juego->hay_derrota())
+		{
+			Sesion::jugar_de_nuevo = true;
+			this->Close();
+			return;
+		}
+
 		juego->clic(e->X, e->Y);
 		this->Invalidate();
 	}
@@ -103,6 +110,18 @@ namespace Strategy {
 		if (e->KeyCode == Keys::Space)
 		{
 			juego->terminar_turno();
+			this->Invalidate();
+		}
+
+		if (e->KeyCode == Keys::K)
+		{
+			juego->trampa_matar();
+			this->Invalidate();
+		}
+
+		if (e->KeyCode == Keys::B)
+		{
+			juego->trampa_bombardeo();
 			this->Invalidate();
 		}
 	}

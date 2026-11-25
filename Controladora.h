@@ -8,6 +8,12 @@ using namespace System::Collections::Generic;
 
 enum class Turno { Aleman, Sovietico };
 
+ref class Sesion
+{
+public:
+	static bool jugar_de_nuevo;
+};
+
 ref class Controladora
 {
 private:
@@ -76,6 +82,9 @@ public:
 	void mover();
 
 	void terminar_turno();
+	bool hay_derrota();
+	void trampa_matar();
+	void trampa_bombardeo();
 };
 
 Controladora::Controladora()
@@ -247,9 +256,7 @@ void Controladora::dibujar(Graphics^ graphics)
 
 	if (derrota)
 	{
-		Font^ letra_grande = gcnew Font("Consolas", 48.0f, FontStyle::Bold);
-		graphics->DrawString("DEFEAT", letra_grande, Brushes::Red, 380, 220);
-		delete letra_grande;
+		dibujar_derrota(graphics);
 	}
 }
 
@@ -696,15 +703,6 @@ int Controladora::contar_alemanes()
 	return total;
 }
 
-void Controladora::bombardeo()
-{
-	agregar_linea("GENERAL HELMUTH WEIDLING", "Artillery! Take cover!");
-	iniciar_dialogo();
-
-	bajas_oleada = 0;
-	sovieticos_oleada = 0;
-}
-
 void Controladora::perder_tropas_alemanas()
 {
 	List<Unidad^>^ alemanes = gcnew List<Unidad^>();
@@ -756,5 +754,50 @@ void Controladora::dibujar_derrota(Graphics^ graphics)
 
 	graphics->DrawString("BERLIN HAS FALLEN", letra_titulo, dorado, 190, 50);
 
-	graphics->DrawString(String::Format("Soviet casualties: {0}", bajas_sovieticas), letra, Brushes::White, );
+	graphics->DrawString(String::Format("Soviet casualties: {0}", bajas_sovieticas), letra, Brushes::White, 330, 190);
+	graphics->DrawString(String::Format("Waves survived: {0}", bombardeos), letra, Brushes::White, 330, 230);
+	graphics->DrawString(String::Format("Shifts survived: {0}", numero_turno), letra, Brushes::White, 330, 270);
+	graphics->DrawString(String::Format("SCORE: {0}", calcular_puntaje()), letra, dorado, 330, 330);
+
+	graphics->DrawString("Epilogue text goes here.", letra, Brushes::Gray, RectangleF(100, 430, 824, 150));
+	graphics->DrawString("Click to play again", letra, dorado, 370, 590);
+
+	delete dorado;
+	delete letra_titulo;
+	delete letra;
+}
+
+bool Controladora::hay_derrota()
+{
+	return derrota;
+}
+
+void Controladora::trampa_matar()
+{
+	if (dialogo_activo || derrota)
+	{
+		return;
+	}
+
+	for (int i = 0; i < unidades->Count; i++)
+	{
+		if (unidades[i]->obtener_bando() == Bando::Sovietico)
+		{
+			unidades->RemoveAt(i);
+			bajas_sovieticas = bajas_sovieticas + 1;
+			bajas_oleada = bajas_oleada + 1;
+			revisar_eventos();
+			return;
+		}
+	}
+}
+
+void Controladora::trampa_bombardeo()
+{
+	if (dialogo_activo || derrota)
+	{
+		return;
+	}
+
+	bombardeo();
 }

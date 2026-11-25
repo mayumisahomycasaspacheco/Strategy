@@ -8,5 +8,12 @@ int main(array<String^>^ args)
 {
 	Application::EnableVisualStyles();
 	Application::SetCompatibleTextRenderingDefault(false);
-	Application::Run(gcnew Strategy::Form_Lore());
+	
+	do
+	{
+		Sesion::jugar_de_nuevo = false;
+		Application::Run(gcnew Strategy::Form_Lore());
+	}
+
+	while (Sesion::jugar_de_nuevo);
 }
