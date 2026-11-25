@@ -46,8 +46,13 @@ private:
 
 	bool evento_zhukov;
 	void revisar_eventos();
-
+	void mostrar_dialogo(String^ nombre, String^ texto);
+	void dibujar_dialogo(Graphics^ graphics);
 	void aparecer_sovieticos(int cantidad);
+
+	bool dialogo_activo;
+	String^ dialogo_nombre;
+	String^ dialogo_texto;
 public:
 	Controladora();
 	~Controladora();
@@ -71,6 +76,10 @@ Controladora::Controladora()
 	seleccionada = nullptr;
 	bajas_sovieticas = 0;
 	evento_zhukov = false;
+
+	dialogo_activo = false;
+	dialogo_nombre = "";
+	dialogo_texto = "";
 
 	numero_turno = 1;
 
@@ -208,10 +217,21 @@ void Controladora::dibujar(Graphics^ graphics)
 	}
 
 	dibujar_panel(graphics);
+
+	if (dialogo_activo)
+	{
+		dibujar_dialogo(graphics);
+	}
 }
 
 void Controladora::clic(int x, int y)
 {
+	if (dialogo_activo)
+	{
+		dialogo_activo = false;
+		return;
+	}
+
 	if (turno != Turno::Aleman)
 	{
 		return;
@@ -273,6 +293,11 @@ bool Controladora::hay_alguien_moviendose()
 
 void Controladora::mover()
 {
+	if (dialogo_activo)
+	{
+		return;
+	}
+
 	for (int i = 0; i < unidades->Count; i++)
 	{
 		unidades[i]->animar();
@@ -313,6 +338,11 @@ void Controladora::atacar(Unidad^ atacante, Unidad^ objetivo)
 
 void Controladora::terminar_turno()
 {
+	if (dialogo_activo)
+	{
+		return;
+	}
+
 	if (turno != Turno::Aleman)
 	{
 		return;
@@ -495,7 +525,19 @@ void Controladora::aparecer_unidad(int fila, int columna, Bando bando, Bitmap^ s
 
 void Controladora::aparecer_sovieticos(int cantidad)
 {
+	int puestos = 0;
 
+	for (int c = 31; c >= 0 && puestos < cantidad; c--)
+	{
+		for (int f = 9; f <= 13 && puestos < cantidad; f++)
+		{
+			if (mapa->es_transitable(f, c) && buscar_unidad(f, c) == nullptr)
+			{
+				aparecer_unidad(f, c, Bando::Sovietico, sprite_soldado1, 10);
+				puestos = puestos + 1;
+			}
+		}
+	}
 }
 
 void Controladora::revisar_eventos()
@@ -503,5 +545,34 @@ void Controladora::revisar_eventos()
 	if (!evento_zhukov && bajas_sovieticas * 4 >= sovieticos_iniciales)
 	{
 		evento_zhukov = true;
+		aparecer_sovieticos(sovieticos_iniciales * 2);
+
+		mostrar_dialogo("GENERAL HELMUTH WEIDLING", "Marshal Zhukov has arrived. Hold the line. Defend to the last man.");
 	}
+}
+
+void Controladora::mostrar_dialogo(String^ nombre, String^ texto)
+{
+	dialogo_activo = true;
+	dialogo_nombre = nombre;
+	dialogo_texto = texto;
+	seleccionada = nullptr;
+}
+
+void Controladora::dibujar_dialogo(Graphics^ graphics)
+{
+	graphics->FillRectangle(Brushes::Black, 0, 512, 1024, 128);
+
+	SolidBrush^ dorado = gcnew SolidBrush(Color::FromArgb(216, 176, 64));
+	graphics->FillRectangle(dorado, 15, 525, 6, 24);
+	delete dorado;
+
+	Font^ letra_nombre = gcnew Font("Consolas", 16.0f, FontStyle::Bold);
+	Font^ letra = gcnew Font("Consolas", 14.0f);
+
+	graphics->DrawString(dialogo_nombre, letra_nombre, Brushes::White, 30, 525);
+	graphics->DrawString(dialogo_texto, letra, Brushes::White, RectangleF(30, 560, 960, 70));
+
+	delete letra_nombre;
+	delete letra;
 }
