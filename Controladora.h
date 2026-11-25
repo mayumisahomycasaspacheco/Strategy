@@ -47,12 +47,18 @@ private:
 	bool evento_zhukov;
 	void revisar_eventos();
 	void mostrar_dialogo(String^ nombre, String^ texto);
+	void agregar_linea(String^ nombre, String^ texto);
+	void iniciar_dialogo();
 	void dibujar_dialogo(Graphics^ graphics);
+	void agregar_lista(String^ nombre, String^ texto);
 	void aparecer_sovieticos(int cantidad);
 
 	bool dialogo_activo;
 	String^ dialogo_nombre;
 	String^ dialogo_texto;
+	List<String^>^ dialogo_nombres;
+	List<String^>^ dialogo_textos;
+	int dialogo_indice;
 public:
 	Controladora();
 	~Controladora();
@@ -80,6 +86,10 @@ Controladora::Controladora()
 	dialogo_activo = false;
 	dialogo_nombre = "";
 	dialogo_texto = "";
+
+	dialogo_nombres = gcnew List<String^>();
+	dialogo_textos = gcnew List<String^>();
+	dialogo_indice = 0;
 
 	numero_turno = 1;
 
@@ -556,6 +566,26 @@ void Controladora::mostrar_dialogo(String^ nombre, String^ texto)
 	dialogo_activo = true;
 	dialogo_nombre = nombre;
 	dialogo_texto = texto;
+	seleccionada = nullptr;
+}
+
+void Controladora::agregar_linea(String^ nombre, String^ texto)
+{
+	dialogo_nombres->Add(nombre);
+	dialogo_textos->Add(texto);
+}
+
+void Controladora::iniciar_dialogo()
+{
+	if (dialogo_nombres->Count == 0)
+	{
+		return;
+	}
+
+	dialogo_indice = 0;
+	dialogo_nombre = dialogo_nombres[0];
+	dialogo_texto = dialogo_textos[0];
+	dialogo_activo = true;
 	seleccionada = nullptr;
 }
 
