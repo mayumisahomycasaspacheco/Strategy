@@ -24,6 +24,7 @@ private:
 	Bitmap^ sprite_abuela;
 	Bitmap^ sprite_mujer;
 	Bitmap^ sprite_nino;
+	Bitmap^ sprite_bomba;
 	Unidad^ seleccionada;
 
 	Unidad^ buscar_unidad(int fila, int columna);
@@ -96,6 +97,7 @@ Controladora::Controladora()
 	sprite_abuela = gcnew Bitmap("sprites/Sprite-0006.png");
 	sprite_mujer = gcnew Bitmap("sprites/Sprite-0007.png");
 	sprite_nino = gcnew Bitmap("sprites/Sprite-0008.png");
+	sprite_bomba = gcnew Bitmap("sprites/Sprite-0009.png");
 	seleccionada = nullptr;
 	bajas_sovieticas = 0;
 	evento_zhukov = false;
@@ -155,6 +157,7 @@ Controladora::~Controladora()
 	delete sprite_abuela;
 	delete sprite_mujer;
 	delete sprite_nino;
+	delete sprite_bomba;
 }
 
 Unidad^ Controladora::buscar_unidad(int fila, int columna)
