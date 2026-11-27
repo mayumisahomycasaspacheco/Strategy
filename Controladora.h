@@ -27,6 +27,8 @@ private:
 	Bitmap^ sprite_nino;
 	Bitmap^ sprite_bomba;
 	List<Bomba^>^ bombas;
+	bool bombardeando;
+	void terminar_bombardeo();
 	void lanzar_bombas(int cantidad);
 	Unidad^ seleccionada;
 
@@ -101,7 +103,9 @@ Controladora::Controladora()
 	sprite_mujer = gcnew Bitmap("sprites/Sprite-0007.png");
 	sprite_nino = gcnew Bitmap("sprites/Sprite-0008.png");
 	sprite_bomba = gcnew Bitmap("sprites/Sprite-0009.png");
+	sprite_bomba->RotateFlip(RotateFlipType::RotateNoneFlipY);
 	bombas = gcnew List<Bomba^>();
+	bombardeando = false;
 	seleccionada = nullptr;
 	bajas_sovieticas = 0;
 	evento_zhukov = false;
@@ -254,6 +258,11 @@ void Controladora::dibujar(Graphics^ graphics)
 		unidades[i]->dibujar(graphics);
 	}
 
+	for (int i = 0; i < bombas->Count; i++)
+	{
+		bombas[i]->dibujar(graphics, sprite_bomba);
+	}
+
 	dibujar_panel(graphics);
 
 	if (dialogo_activo)
@@ -286,6 +295,11 @@ void Controladora::clic(int x, int y)
 			dialogo_textos->Clear();
 		}
 
+		return;
+	}
+
+	if (bombardeando)
+	{
 		return;
 	}
 
@@ -356,6 +370,27 @@ bool Controladora::hay_alguien_moviendose()
 
 void Controladora::mover()
 {
+	for (int i = bombas->Count - 1; i >= 0; i--)
+	{
+		bombas[i]->caer();
+
+		if (bombas[i]->llego())
+		{
+			bombas->RemoveAt(i);
+		}
+	}
+
+	if (bombardeando)
+	{
+		if (bombas->Count == 0)
+		{
+			bombardeando = false;
+			terminar_bombardeo();
+		}
+
+		return;
+	}
+
 	if (dialogo_activo)
 	{
 		return;
@@ -735,6 +770,16 @@ void Controladora::perder_tropas_alemanas()
 
 void Controladora::bombardeo()
 {
+	bombardeando = true;
+	sovieticos_oleada = 0;
+	bajas_oleada = 0;
+	seleccionada = nullptr;
+
+	lanzar_bombas(14);
+}
+
+void Controladora::terminar_bombardeo()
+{
 	bombardeos = bombardeos + 1;
 	perder_tropas_alemanas();
 	aparecer_sovieticos(sovieticos_iniciales);
@@ -801,7 +846,7 @@ void Controladora::trampa_matar()
 
 void Controladora::trampa_bombardeo()
 {
-	if (dialogo_activo || derrota)
+	if (dialogo_activo || derrota || bombardeando)
 	{
 		return;
 	}
@@ -817,7 +862,7 @@ void Controladora::lanzar_bombas(int cantidad)
 	{
 		int x = azar->Next(0, 1008);
 		int destino = azar->Next(150, 500);
-		int retraso = i * 48 + azar->Next(0, 48);
+		int retraso = i * 20 + azar->Next(0, 20);
 
 		bombas->Add(gcnew Bomba(x, destino, retraso));
 	}

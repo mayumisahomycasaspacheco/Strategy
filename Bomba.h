@@ -20,7 +20,7 @@ Bomba::Bomba(int x, int destino_y, int retraso)
 	this->x = x;
 	this->destino_y = destino_y;
 	y = -retraso;
-	velocidad = 16;
+	velocidad = 5;
 }
 
 void Bomba::caer()
