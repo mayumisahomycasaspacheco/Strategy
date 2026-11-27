@@ -1,6 +1,7 @@
 #pragma once
 #include "Mapa.h"
 #include "Unidad.h"
+#include "Bomba.h"
 
 using namespace System;
 using namespace System::Drawing;
@@ -25,6 +26,8 @@ private:
 	Bitmap^ sprite_mujer;
 	Bitmap^ sprite_nino;
 	Bitmap^ sprite_bomba;
+	List<Bomba^>^ bombas;
+	void lanzar_bombas(int cantidad);
 	Unidad^ seleccionada;
 
 	Unidad^ buscar_unidad(int fila, int columna);
@@ -98,6 +101,7 @@ Controladora::Controladora()
 	sprite_mujer = gcnew Bitmap("sprites/Sprite-0007.png");
 	sprite_nino = gcnew Bitmap("sprites/Sprite-0008.png");
 	sprite_bomba = gcnew Bitmap("sprites/Sprite-0009.png");
+	bombas = gcnew List<Bomba^>();
 	seleccionada = nullptr;
 	bajas_sovieticas = 0;
 	evento_zhukov = false;
@@ -803,4 +807,18 @@ void Controladora::trampa_bombardeo()
 	}
 
 	bombardeo();
+}
+
+void Controladora::lanzar_bombas(int cantidad)
+{
+	Random^ azar = gcnew Random();
+
+	for (int i = 0; i < cantidad; i++)
+	{
+		int x = azar->Next(0, 1008);
+		int destino = azar->Next(150, 500);
+		int retraso = i * 48 + azar->Next(0, 48);
+
+		bombas->Add(gcnew Bomba(x, destino, retraso));
+	}
 }

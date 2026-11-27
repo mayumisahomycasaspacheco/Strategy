@@ -42,4 +42,8 @@ void Bomba::dibujar(Graphics^ graphics, Bitmap^ sprite)
 {
 	graphics->InterpolationMode = System::Drawing::Drawing2D::InterpolationMode::NearestNeighbor;
 	graphics->PixelOffsetMode = System::Drawing::Drawing2D::PixelOffsetMode::Half;
+
+	Rectangle destino = Rectangle(x, y - 32, 16, 32);
+	Rectangle origen = Rectangle(0, 0, sprite->Width, sprite->Height);
+	graphics->DrawImage(sprite, destino, origen, GraphicsUnit::Pixel);
 }
