@@ -19,6 +19,8 @@ public:
 	bool es_transitable(int fila, int columna);
 	void clic(int x, int y);
 	int obtener_tamano();
+	int obtener_filas();
+	int obtener_columnas();
 };
 
 Mapa::Mapa()
@@ -118,4 +120,14 @@ void Mapa::clic(int x, int y)
 int Mapa::obtener_tamano()
 {
 	return tamano;
+}
+
+int Mapa::obtener_filas()
+{
+	return filas;
+}
+
+int Mapa::obtener_columnas()
+{
+	return columnas;
 }

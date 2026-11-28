@@ -56,6 +56,7 @@ private:
 	int espera;
 
 	Unidad^ buscar_aleman_mas_cercano(Unidad^ desde);
+	array<int, 2>^ calcular_distancias(int fila, int columna);
 	void actuar_enemigo(Unidad^ enemigo);
 	void turno_enemigo();
 	bool todos_los_alemanes_actuaron();
@@ -69,7 +70,7 @@ private:
 	void iniciar_dialogo();
 	void dibujar_dialogo(Graphics^ graphics);
 	void dibujar_derrota(Graphics^ graphics);
-	void aparecer_sovieticos(int cantidad);
+	void aparecer_sovieticos(int cantidad, int fila_inicio, int fila_fin);
 
 	bool dialogo_activo;
 	bool derrota;
@@ -565,10 +566,12 @@ void Controladora::actuar_enemigo(Unidad^ enemigo)
 		return;
 	}
 
+	array<int, 2>^ caminos = calcular_distancias(objetivo->obtener_fila(), objetivo->obtener_columna());
+
 	int mov = enemigo->obtener_movimiento();
 	int mejor_fila = -1;
 	int mejor_columna = -1;
-	int mejor_distancia = distancia(enemigo, objetivo);
+	int mejor_distancia = caminos[enemigo->obtener_fila(), enemigo->obtener_columna()];
 
 	for (int f = enemigo->obtener_fila() - mov; f <= enemigo->obtener_fila() + mov; f++)
 	{
@@ -576,7 +579,7 @@ void Controladora::actuar_enemigo(Unidad^ enemigo)
 		{
 			if (puede_ir_a(enemigo, f, c))
 			{
-				int d = Math::Abs(f - objetivo->obtener_fila()) + Math::Abs(c - objetivo->obtener_columna());
+				int d = caminos[f, c];
 
 				if (d < mejor_distancia)
 				{
@@ -640,13 +643,13 @@ void Controladora::aparecer_unidad(int fila, int columna, Bando bando, Bitmap^ s
 	unidades->Add(nueva);
 }
 
-void Controladora::aparecer_sovieticos(int cantidad)
+void Controladora::aparecer_sovieticos(int cantidad, int fila_inicio, int fila_fin)
 {
 	int puestos = 0;
 
 	for (int c = 31; c >= 0 && puestos < cantidad; c--)
 	{
-		for (int f = 9; f <= 13 && puestos < cantidad; f++)
+		for (int f = fila_inicio; f <= fila_inicio && puestos < cantidad; f++)
 		{
 			if (mapa->es_transitable(f, c) && buscar_unidad(f, c) == nullptr)
 			{
@@ -662,7 +665,7 @@ void Controladora::revisar_eventos()
 	if (!evento_zhukov && bajas_sovieticas * 4 >= sovieticos_iniciales)
 	{
 		evento_zhukov = true;
-		aparecer_sovieticos(sovieticos_iniciales * 2);
+		aparecer_sovieticos(sovieticos_iniciales * 2, 1, 4);
 		sovieticos_oleada = contar_sovieticos();
 		bajas_oleada = 0;
 
@@ -782,7 +785,7 @@ void Controladora::terminar_bombardeo()
 {
 	bombardeos = bombardeos + 1;
 	perder_tropas_alemanas();
-	aparecer_sovieticos(sovieticos_iniciales);
+	aparecer_sovieticos(sovieticos_iniciales, 9, 13);
 
 	sovieticos_oleada = contar_sovieticos();
 	bajas_oleada = 0;
@@ -866,4 +869,45 @@ void Controladora::lanzar_bombas(int cantidad)
 
 		bombas->Add(gcnew Bomba(x, destino, retraso));
 	}
+}
+
+array<int, 2>^ Controladora::calcular_distancias(int fila, int columna)
+{
+	int filas = mapa->obtener_filas();
+	int columnas = mapa->obtener_columnas();
+	array<int, 2>^ dist = gcnew array<int, 2>(filas, columnas);
+
+	for (int f = 0; f < filas; f++)
+	{
+		for (int c = 0; c < columnas; c++)
+		{
+			dist[f, c] = 9999;
+		}
+	}
+
+	Queue<Point>^ cola = gcnew Queue<Point>();
+	dist[fila, columna] = 0;
+	cola->Enqueue(Point(columna, fila));
+
+	array<int>^ df = gcnew array<int>{-1, 1, 0, 0};
+	array<int>^ dc = gcnew array<int>{0, 0, -1, 1};
+
+	while (cola->Count > 0)
+	{
+		Point actual = cola->Dequeue();
+
+		for (int k = 0; k < 4; k++)
+		{
+			int nf = actual.Y + df[k];
+			int nc = actual.X + dc[k];
+
+			if (mapa->es_transitable(nf, nc) && dist[nf, nc] == 9999)
+			{
+				dist[nf, nc] = dist[actual.Y, actual.X] + 1;
+				cola->Enqueue(Point(nc, nf));
+			}
+		}
+	}
+
+	return dist;
 }
