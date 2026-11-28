@@ -2,6 +2,7 @@
 #include "Mapa.h"
 #include "Unidad.h"
 #include "Bomba.h"
+#include "Explosion.h"
 
 using namespace System;
 using namespace System::Drawing;
@@ -26,6 +27,7 @@ private:
 	Bitmap^ sprite_mujer;
 	Bitmap^ sprite_nino;
 	Bitmap^ sprite_bomba;
+	Bitmap^ sprite_explosion;
 	List<Bomba^>^ bombas;
 	bool bombardeando;
 	void terminar_bombardeo();
@@ -105,6 +107,7 @@ Controladora::Controladora()
 	sprite_nino = gcnew Bitmap("sprites/Sprite-0008.png");
 	sprite_bomba = gcnew Bitmap("sprites/Sprite-0009.png");
 	sprite_bomba->RotateFlip(RotateFlipType::RotateNoneFlipY);
+	sprite_explosion = gcnew Bitmap("sprites/Sprite-0010.png");
 	bombas = gcnew List<Bomba^>();
 	bombardeando = false;
 	seleccionada = nullptr;
@@ -167,6 +170,7 @@ Controladora::~Controladora()
 	delete sprite_mujer;
 	delete sprite_nino;
 	delete sprite_bomba;
+	delete sprite_explosion;
 }
 
 Unidad^ Controladora::buscar_unidad(int fila, int columna)
