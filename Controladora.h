@@ -29,6 +29,7 @@ private:
 	Bitmap^ sprite_bomba;
 	Bitmap^ sprite_explosion;
 	List<Bomba^>^ bombas;
+	List<Explosion^>^ explosiones;
 	bool bombardeando;
 	void terminar_bombardeo();
 	void lanzar_bombas(int cantidad);
@@ -109,6 +110,7 @@ Controladora::Controladora()
 	sprite_bomba->RotateFlip(RotateFlipType::RotateNoneFlipY);
 	sprite_explosion = gcnew Bitmap("sprites/Sprite-0010.png");
 	bombas = gcnew List<Bomba^>();
+	explosiones = gcnew List<Explosion^>();
 	bombardeando = false;
 	seleccionada = nullptr;
 	bajas_sovieticas = 0;
@@ -256,6 +258,12 @@ void Controladora::dibujar_alcance(Graphics^ graphics)
 void Controladora::dibujar(Graphics^ graphics)
 {
 	mapa->dibujar(graphics);
+
+	for (int i = 0; i < explosiones->Count; i++)
+	{
+		explosiones[i]->dibujar(graphics, sprite_explosion);
+	}
+
 	dibujar_alcance(graphics);
 
 	for (int i = 0; i < unidades->Count; i++)
@@ -381,13 +389,24 @@ void Controladora::mover()
 
 		if (bombas[i]->llego())
 		{
+			explosiones->Add(gcnew Explosion(bombas[i]->obtener_centro_x(), bombas[i]->obtener_destino_y()));
 			bombas->RemoveAt(i);
+		}
+	}
+
+	for (int i = explosiones->Count - 1; i >= 0; i--)
+	{
+		explosiones[i]->animar();
+
+		if (explosiones[i]->terminada())
+		{
+			explosiones->RemoveAt(i);
 		}
 	}
 
 	if (bombardeando)
 	{
-		if (bombas->Count == 0)
+		if (bombas->Count == 0 && explosiones->Count == 0)
 		{
 			bombardeando = false;
 			terminar_bombardeo();

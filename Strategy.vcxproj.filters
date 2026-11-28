@@ -44,5 +44,8 @@
     <ClInclude Include="Form_Lore2.h">
       <Filter>Archivos de origen</Filter>
     </ClInclude>
+    <ClInclude Include="Explosion.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

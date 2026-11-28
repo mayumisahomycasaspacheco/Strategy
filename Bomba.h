@@ -12,6 +12,8 @@ public:
 	Bomba(int x, int destino_y, int retraso);
 	void caer();
 	bool llego();
+	int obtener_centro_x();
+	int obtener_destino_y();
 	void dibujar(Graphics^ graphics, Bitmap^ sprite);
 };
 
@@ -46,4 +48,14 @@ void Bomba::dibujar(Graphics^ graphics, Bitmap^ sprite)
 	Rectangle destino = Rectangle(x, y - 32, 16, 32);
 	Rectangle origen = Rectangle(0, 0, sprite->Width, sprite->Height);
 	graphics->DrawImage(sprite, destino, origen, GraphicsUnit::Pixel);
+}
+
+int Bomba::obtener_centro_x()
+{
+	return x + 8;
+}
+
+int Bomba::obtener_destino_y()
+{
+	return destino_y;
 }
